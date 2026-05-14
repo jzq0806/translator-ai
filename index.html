@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能翻译助手</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-language"></i>
+                <span>智能翻译</span>
+            </div>
+            <div class="header-controls">
+                <button class="icon-btn" id="historyBtn" title="历史记录">
+                    <i class="fas fa-history"></i>
+                </button>
+                <button class="icon-btn" id="favoriteBtn" title="收藏夹">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button class="icon-btn" id="settingsBtn" title="设置">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="icon-btn" id="darkModeBtn" title="夜间模式">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 模式切换 -->
+            <div class="mode-switch">
+                <div class="switch-container">
+                    <span class="mode-label">翻译</span>
+                    <div class="toggle-switch" id="modeToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="mode-label">搜题</span>
+                </div>
+                <button class="clear-btn" id="clearHistoryBtn" title="清除历史">
+                    <i class="fas fa-trash-alt"></i>
+                    快速清除
+                </button>
+            </div>
+
+            <!-- 功能标签页 -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="text">
+                    <i class="fas fa-keyboard"></i>
+                    文字
+                </button>
+                <button class="tab-btn" data-tab="image">
+                    <i class="fas fa-camera"></i>
+                    图片
+                </button>
+                <button class="tab-btn" data-tab="document">
+                    <i class="fas fa-file-word"></i>
+                    文档
+                </button>
+            </div>
+
+            <!-- 文字输入面板 -->
+            <div class="panel active" id="textPanel">
+                <div class="input-section">
+                    <div class="language-selector">
+                        <select id="sourceLang">
+                            <option value="zh">中文</option>
+                            <option value="en">English</option>
+                            <option value="auto">自动检测</option>
+                        </select>
+                        <button class="swap-btn" id="swapLangBtn">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <select id="targetLang">
+                            <option value="en">English</option>
+                            <option value="zh">中文</option>
+                        </select>
+                    </div>
+                    <textarea 
+                        id="inputText" 
+                        placeholder="请输入要翻译的内容或问题..."
+                        rows="6"
+                    ></textarea>
+                    <div class="input-controls">
+                        <div class="char-count">
+                            <span id="charCount">0</span> / 5000
+                        </div>
+                        <div class="input-buttons">
+                            <button class="icon-btn" id="voiceInputBtn" title="语音输入">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button class="icon-btn" id="clearInputBtn" title="清除">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="primary-btn" id="translateBtn">
+                                <i class="fas fa-paper-plane"></i>
+                                翻译
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="output-section" id="outputSection" style="display: none;">
+                    <div class="output-header">
+                        <h3>翻译结果</h3>
+                        <div class="output-controls">
+                            <button class="icon-btn" id="speakBtn" title="朗读">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <button class="icon-btn" id="copyBtn" title="复制">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="icon-btn" id="saveBtn" title="收藏">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button class="icon-btn" id="rewriteBtn" title="重新生成" style="display: none;">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-text" id="outputText"></div>
+                    <div class="ai-options" id="aiOptions" style="display: none;">
+                        <label>答案详细程度:</label>
+                        <select id="detailLevel">
+                            <option value="simple">简单</option>
+                            <option value="normal" selected>标准</option>
+                            <option value="detailed">详细</option>
+                            <option value="academic">学术</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片翻译面板 -->
+            <div class="panel" id="imagePanel">
+                <div class="upload-area" id="imageUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽图片到此处</p>
+                    <p class="hint">支持 JPG, PNG, GIF 格式</p>
+                    <input type="file" id="imageInput" accept="image/*" hidden>
+                    <div style="margin-top: 20px;">
+                        <button class="primary-btn" id="openCameraBtn">
+                            <i class="fas fa-camera"></i>
+                            打开摄像头拍照
+                        </button>
+                    </div>
+                </div>
+                <div class="camera-container" id="cameraContainer" style="display: none;">
+                    <video id="cameraVideo" autoplay playsinline></video>
+                    <div class="camera-controls">
+                        <button class="camera-btn" id="takePictureBtn">
+                            <i class="fas fa-camera"></i>
+                            拍照
+                        </button>
+                        <button class="camera-btn secondary" id="switchCameraBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            切换摄像头
+                        </button>
+                        <button class="camera-btn secondary" id="closeCameraBtn">
+                            <i class="fas fa-times"></i>
+                            关闭
+                        </button>
+                    </div>
+                </div>
+                <div class="image-preview" id="imagePreview" style="display: none;">
+                    <div class="preview-header">
+                        <h3>图片预览</h3>
+                        <button class="icon-btn" id="removeImageBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="preview-container">
+                        <canvas id="imageCanvas"></canvas>
+                    </div>
+                    <div class="photo-editor" id="photoEditor" style="display: none;">
+                        <div class="editor-tools">
+                            <button class="tool-btn" id="rotateLeftBtn" title="向左旋转">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button class="tool-btn" id="rotateRightBtn" title="向右旋转">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button class="tool-btn" id="flipHorizontalBtn" title="水平翻转">
+                                <i class="fas fa-arrows-alt-h"></i>
+                            </button>
+                            <button class="tool-btn" id="flipVerticalBtn" title="垂直翻转">
+                                <i class="fas fa-arrows-alt-v"></i>
+                            </button>
+                            <button class="tool-btn" id="cropBtn" title="裁剪">
+                                <i class="fas fa-crop"></i>
+                            </button>
+                            <button class="tool-btn" id="brightnessBtn" title="调整亮度">
+                                <i class="fas fa-sun"></i>
+                            </button>
+                            <button class="tool-btn" id="contrastBtn" title="调整对比度">
+                                <i class="fas fa-adjust"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="image-controls">
+                        <button class="secondary-btn" id="editPhotoBtn">
+                            <i class="fas fa-edit"></i>
+                            编辑照片
+                        </button>
+                        <button class="primary-btn" id="processImageBtn">
+                            <i class="fas fa-magic"></i>
+                            开始识别
+                        </button>
+                        <button class="secondary-btn" id="downloadImageBtn" style="display: none;">
+                            <i class="fas fa-download"></i>
+                            下载结果
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文档处理面板 -->
+            <div class="panel" id="documentPanel">
+                <div class="upload-area" id="docUploadArea">
+                    <i class="fas fa-file-upload"></i>
+                    <p>点击或拖拽Word文档到此处</p>
+                    <p class="hint">支持 .doc, .docx 格式</p>
+                    <input type="file" id="docInput" accept=".doc,.docx" hidden>
+                </div>
+                <div class="doc-preview" id="docPreview" style="display: none;">
+                    <div class="preview-header">
+                        <h3>文档内容</h3>
+                        <button class="icon-btn" id="removeDocBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="doc-content" id="docContent"></div>
+                    <div class="doc-controls">
+                        <div class="doc-options">
+                            <label>
+                                <input type="checkbox" id="keepFormatting" checked>
+                                保持原格式
+                            </label>
+                            <label>
+                                <input type="checkbox" id="addReferences">
+                                添加参考来源
+                            </label>
+                        </div>
+                        <button class="primary-btn" id="processDocBtn">
+                            <i class="fas fa-magic"></i>
+                            AI完成作业
+                        </button>
+                        <button class="secondary-btn" id="downloadDocBtn" style="display: none;">
+                            <i class="fas fa-download"></i>
+                            下载完成文档
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快捷短语 -->
+            <div class="quick-phrases">
+                <h4>常用短语</h4>
+                <div class="phrase-list">
+                    <button class="phrase-btn" data-text="Hello">Hello</button>
+                    <button class="phrase-btn" data-text="Thank you">Thank you</button>
+                    <button class="phrase-btn" data-text="Excuse me">Excuse me</button>
+                    <button class="phrase-btn" data-text="I don't understand">I don't understand</button>
+                    <button class="phrase-btn" data-text="Can you help me?">Can you help me?</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 侧边栏 - 历史记录 -->
+    <div class="sidebar" id="historySidebar">
+        <div class="sidebar-header">
+            <h3>历史记录</h3>
+            <button class="icon-btn" id="closeHistoryBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content" id="historyContent">
+            <p class="empty-message">暂无历史记录</p>
+        </div>
+    </div>
+
+    <!-- 侧边栏 - 收藏夹 -->
+    <div class="sidebar" id="favoriteSidebar">
+        <div class="sidebar-header">
+            <h3>收藏夹</h3>
+            <button class="icon-btn" id="closeFavoriteBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content" id="favoriteContent">
+            <p class="empty-message">暂无收藏</p>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>设置</h3>
+                <button class="icon-btn" id="closeSettingsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <h4>API配置</h4>
+                    <div class="form-group">
+                        <label for="claudeApiKey">Claude API Key:</label>
+                        <input type="password" id="claudeApiKey" placeholder="sk-ant-...">
+                        <small>您的API密钥将安全存储在本地</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="ocrApiKey">OCR API Key (可选):</label>
+                        <input type="password" id="ocrApiKey" placeholder="Google Vision 或 百度OCR">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <h4>隐私设置</h4>
+                    <label class="switch-label">
+                        <input type="checkbox" id="incognitoMode">
+                        <span>隐身模式 (不保存历史记录)</span>
+                    </label>
+                    <label class="switch-label">
+                        <input type="checkbox" id="localStorageOnly" checked>
+                        <span>仅本地存储 (数据不上传)</span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <h4>界面设置</h4>
+                    <div class="form-group">
+                        <label for="fontSize">字体大小:</label>
+                        <select id="fontSize">
+                            <option value="small">小</option>
+                            <option value="medium" selected>中</option>
+                            <option value="large">大</option>
+                        </select>
+                    </div>
+                    <label class="switch-label">
+                        <input type="checkbox" id="autoSpeak">
+                        <span>自动朗读翻译结果</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" id="resetSettingsBtn">重置</button>
+                <button class="primary-btn" id="saveSettingsBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>处理中...</p>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 引入脚本 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip-utils.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/groq-api.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/ocr.js"></script>
+    <script src="js/docx-handler.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
