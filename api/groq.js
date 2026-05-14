@@ -2,10 +2,11 @@
 // 这个文件将部署到Vercel作为后端API
 
 export default async function handler(req, res) {
-    // 设置CORS头
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // 设置CORS头 - 允许GitHub Pages访问
+    res.setHeader('Access-Control-Allow-Origin', 'https://jzq0806.github.io');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     
     // 处理OPTIONS预检请求
     if (req.method === 'OPTIONS') {
