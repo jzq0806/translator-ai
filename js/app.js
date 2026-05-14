@@ -28,11 +28,17 @@ class TranslatorApp {
             document.getElementById('darkModeBtn').innerHTML = '<i class="fas fa-sun"></i>';
         }
         
-        // 加载API密钥到设置表单
-        const claudeKey = Utils.getApiKey('claude');
-        const ocrKey = Utils.getApiKey('ocr');
-        if (claudeKey) document.getElementById('claudeApiKey').value = claudeKey;
-        if (ocrKey) document.getElementById('ocrApiKey').value = ocrKey;
+        // 加载API密钥到设置表单（如果元素存在）
+        const claudeKeyInput = document.getElementById('claudeApiKey');
+        const ocrKeyInput = document.getElementById('ocrApiKey');
+        if (claudeKeyInput) {
+            const claudeKey = Utils.getApiKey('claude');
+            if (claudeKey) claudeKeyInput.value = claudeKey;
+        }
+        if (ocrKeyInput) {
+            const ocrKey = Utils.getApiKey('ocr');
+            if (ocrKey) ocrKeyInput.value = ocrKey;
+        }
         
         // 加载其他设置
         document.getElementById('incognitoMode').checked = settings.incognitoMode;
