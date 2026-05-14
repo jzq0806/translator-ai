@@ -4,7 +4,7 @@ const GroqAPI = {
     currentMode: 'translate', // 'translate' 或 'ai'
     
     // API配置
-    apiUrl: 'https://translator-ai-api.vercel.app/api/groq', // 后端代理地址
+    apiUrl: 'https://translator-ai-7sse.vercel.app/api/groq', // 后端代理地址
     
     // 调用后端API
     async callGroq(messages, systemPrompt = '') {
